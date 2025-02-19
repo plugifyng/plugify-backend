@@ -3,7 +3,7 @@ import BaseModel from 'src/utils/base.model';
 import { UserRole } from 'src/utils/enums';
 
 
-@Entity({ name: 'users' }) // Explicitly naming the table
+@Entity({ name: 'users' })
 export class User extends BaseModel {
   @Column()
   name: string;
@@ -20,6 +20,9 @@ export class User extends BaseModel {
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role: UserRole;
 
-  @Column({ default: true })
+  @Column({ default: false })
+  emailVerified: boolean;
+
+  @Column({ default: false })
   isActive: boolean;
 }

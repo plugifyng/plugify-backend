@@ -103,6 +103,46 @@ export class UsersService {
     
   }
 
+  async getUserByEmail(email: string) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: {
+          email: email
+        }
+      });
+  
+      if (!user) {
+        throw UserNotFoundException
+      }
+  
+      return user;
+
+    } catch (err) {
+      throw new BadRequestException(err.message)
+    }
+    
+  }
+
+  async getUserById(id: string) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: {
+          id: id
+        }
+      });
+  
+      if (!user) {
+        throw UserNotFoundException
+      }
+  
+      return user;
+
+    } catch (err) {
+      throw new BadRequestException(err.message)
+    }
+    
+  }
+
   async findByPhone(phone: string) {
     try {
       const user = await this.userRepository.findOne({

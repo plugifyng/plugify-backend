@@ -13,6 +13,7 @@ export class UserMapper {
         userData.phone = user.phone;
         userData.name = user.name;
         userData.role = user.role;
+        userData.emailVerified = user.emailVerified;
         userData.isActive = user.isActive;
         userData.createdAt = user.createdAt;
         userData.updatedAt = user.updatedAt;

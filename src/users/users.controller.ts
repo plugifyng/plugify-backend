@@ -1,5 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { User } from './decorators/user.decorator';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { UserAuthGuard } from 'src/auth/guards/user-auth.guard';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -29,12 +31,17 @@ export class UsersController {
     return users;
   }
 
-  @Get(':id')
+  @Get('me')
+  @ApiBearerAuth()
+  @UseGuards(UserAuthGuard)
   @ApiOperation({ summary: 'Get a user by ID' })
   @ApiResponse({ status: 200, description: 'User found', type: UserDto })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async findOne(@Param('id') id: string): Promise<UserDto> {
-    const user = await this.usersService.findOne(id);
+  async findOne(
+    @User() userPayload: any,
+  ): Promise<UserDto> {
+    console.log(userPayload);
+    const user = await this.usersService.findOne(userPayload.id);
     return user;
   }
 

@@ -19,6 +19,9 @@ export class UserDto extends BaseModelDto {
     @ApiProperty({enum: UserRole})
     @IsEnum(UserRole)
     role: UserRole;
+
+    @ApiProperty({ description: 'Check if user email is verified' })
+    emailVerified: boolean;
   
     @ApiProperty({ description: 'Check if user is active' })
     isActive: boolean;
