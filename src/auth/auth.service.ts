@@ -17,6 +17,10 @@ import { AccountNotVerifiedException, IncorrectCredentialsException, UserNotFoun
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { EmailOption } from 'src/types/mail.types';
+import { mailStructure } from 'src/mail/interface/mail.send';
+import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +34,8 @@ export class AuthService {
         private passwordResetRepo: Repository<PasswordReset>,
         @InjectRepository(User)
         private userRepository: Repository<User>,
+        private configService: ConfigService,
+        private eventEmitter: EventEmitter2,
     ) {}
 
     async validateUser(email: string, password: string): Promise<User|null> {
@@ -71,6 +77,7 @@ export class AuthService {
     }
 
     async requestEmailVerification(email: string) {
+        const BASE_URL = this.configService.get<'string'>('FRONTEND_URL');
 
         try {
             const user = await this.usersService.findByEmail(email);
@@ -97,6 +104,20 @@ export class AuthService {
 
 
             const newEmailVer = await this.emailVerRepository.save(emailVer);
+
+            const verifyEmail: EmailOption = mailStructure(
+                [email],
+                'support@plugify.ng',
+                'Verify Your Account',
+                'email-verification.html',
+                {
+                    firstName: `${user.name}`,
+                    subject: 'Verify Your Account',
+                    verifyLink: `${BASE_URL}/user/verify/${token}/${email}`,
+                },
+            );
+            const emitReturn = this.eventEmitter.emit('auth.verification', verifyEmail);
+            console.log(emitReturn);
             
             return newEmailVer;
 
